@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -21,4 +18,36 @@ model User {
   profilePic String   @default("")
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now())
+  messages   Message[] @relation("MessageByUser")
+  sentConversations   Conversation[] @relation("SenderRelation")
+  receivedConversations Conversation[] @relation("ReceiverRelation")
+}
+
+model Message {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  text          String   @default("")
+  imageUrl      String   @default("")
+  videoUrl      String   @default("")
+  seen          Boolean  @default(false)
+  msgByUser     User?    @relation(fields: [msgByUserId], references: [id], name: "MessageByUser")
+  msgByUserId   String?  @db.ObjectId  // Foreign key to User (ObjectId)
+  conversation  Conversation? @relation(fields: [conversationId], references: [id], name: "ConversationMessages")
+  conversationId String?  @db.ObjectId // Foreign key to Conversation (ObjectId)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Conversation {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  sender     User     @relation(fields: [senderId], references: [id], name: "SenderRelation")
+  senderId   String   @db.ObjectId  // Foreign key to User (ObjectId)
+  
+  receiver   User     @relation(fields: [receiverId], references: [id], name: "ReceiverRelation")
+  receiverId String   @db.ObjectId  // Foreign key to User (ObjectId)
+  
+  messages   Message[] @relation("ConversationMessages")
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
