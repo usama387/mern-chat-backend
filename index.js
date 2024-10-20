@@ -1,34 +1,40 @@
-// importing express for routing
-const express = require("express");
+// Importing express for routing
+import express from 'express';
 
-// importing cors for http requests from frontend
-const cors = require("cors");
+// Importing cors for http requests from frontend
+import cors from 'cors';
 
-// to env file
-require("dotenv").config();
+// Importing dotenv to load environment variables
+import dotenv from 'dotenv';
+dotenv.config(); // Initialize dotenv
 
-// to use cookies
-const cookieParser = require("cookie-parser");
+// Importing cookie-parser for handling cookies
+import cookieParser from 'cookie-parser';
 
-// storing express in app variable for assigning routes
+import router from './routes/index.js';
+
+
+// Storing express in app variable for assigning routes
 const app = express();
 
-// use is a middleware utilizing express for cors permission
+// Use a middleware utilizing express for CORS permission
 app.use(cors({
     origin: process.env.FRONTEND_URL,
     credentials: true,
-}))
+}));
 
-// use is another middleware that specifies the inflow and outflow of data will be in json format
+// Use another middleware that specifies the inflow and outflow of data will be in JSON format
 app.use(express.json());
 
-// cookie parser will be used on every call
+// Cookie parser will be used on every call
 app.use(cookieParser());
 
-// call the env port num or else 5000
+app.use("/api", router)
+
+// Call the env port num or else 5000
 const PORT = process.env.PORT || 5000;
 
-// now run the app with listen method on the port
+// Now run the app with listen method on the port
 app.listen(PORT, () => {
     console.log("The app is running: " + PORT);
-})
+});
