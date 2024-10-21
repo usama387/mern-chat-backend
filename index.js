@@ -11,11 +11,14 @@ dotenv.config(); // Initialize dotenv
 // Importing cookie-parser for handling cookies
 import cookieParser from 'cookie-parser';
 
+// for api routing
 import router from './routes/index.js';
 
+// socket configuration for app
+import { server, app } from './socket/index.js';
 
-// Storing express in app variable for assigning routes
-const app = express();
+
+
 
 // Use a middleware utilizing express for CORS permission
 app.use(cors({
@@ -35,6 +38,6 @@ app.use("/api", router)
 const PORT = process.env.PORT || 5000;
 
 // Now run the app with listen method on the port
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log("The app is running: " + PORT);
 });
