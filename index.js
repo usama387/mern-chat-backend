@@ -21,10 +21,12 @@ import { server, app } from './socket/index.js';
 
 
 // Use a middleware utilizing express for CORS permission
-app.use(cors({
-    origin: process.env.FRONTEND_URL,
+const corsOptions = {
+    origin: "http://localhost:5173",
     credentials: true,
-}));
+};
+
+app.use(cors(corsOptions));
 
 // Use another middleware that specifies the inflow and outflow of data will be in JSON format
 app.use(express.json());
