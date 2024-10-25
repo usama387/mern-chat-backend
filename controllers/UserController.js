@@ -149,30 +149,40 @@ export const updateUser = asyncHandler(async (req, res) => {
 
 // controller to search the user with name or email
 export const searchUser = asyncHandler(async (req, res) => {
-
     const { search } = req.body;
 
-    // Perform a case-insensitive search using Prisma's `contains`
-    const users = await prisma.user.findMany({
-        where: {
+    // Build search conditions based on `search` input
+    const searchConditions = search?.trim()
+        ? {
             OR: [
                 { name: { contains: search, mode: 'insensitive' } },
                 { email: { contains: search, mode: 'insensitive' } }
             ]
-        },
-        select: {
-            // exclude password
-            password: false,
-            id: true,
-            name: true,
-            email: true,
-            profilePic: true,
         }
-    })
+        : {}; // Empty conditions return all users
 
-    res.status(200).json({
-        message: "All Users",
-        users,
-        success: true,
-    })
-})
+    try {
+        const users = await prisma.user.findMany({
+            where: searchConditions,
+            select: {
+                password: false,
+                id: true,
+                name: true,
+                email: true,
+                profilePic: true,
+            }
+        });
+
+        res.status(200).json({
+            message: "Users fetched successfully",
+            users,
+            success: true,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "An error occurred while searching for users",
+            success: false,
+            error: error.message
+        });
+    }
+});
